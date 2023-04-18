@@ -10,7 +10,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "endpoint.hpp"
+#include "endpoint.h"
 
 namespace Net {
     using namespace std::chrono;

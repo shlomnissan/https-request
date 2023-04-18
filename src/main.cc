@@ -12,7 +12,8 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-#include "socket.hpp"
+#include "socket.h"
+#include "url.h"
 
 using namespace std::chrono_literals;
 
@@ -73,11 +74,11 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    std::string_view hostname = argv[1];
+    Net::URL url(argv[1]);
 
     init_openssl();
 
-    Net::Socket socket {{hostname, "443"}};
+    Net::Socket socket {{url.host(), "443"}};
     socket.connect();
 
     // An SSLContext is used to set various options regarding certificates,
@@ -104,12 +105,12 @@ int main(int argc, char *argv[]) {
             "User-Agent: https-request/0.1\r\n"
             "Connection: close\r\n"
             "\r\n",
-            hostname
+            url.host()
         )
     };
 
     SSL_ptr ssl {SSL_new(ctx.get())};
-    if (!SSL_set_tlsext_host_name(ssl.get(), hostname.data())) {
+    if (!SSL_set_tlsext_host_name(ssl.get(), url.host().data())) {
         std::cerr << "SSL_set_tlsext_host_name() failed.\n";
         ERR_print_errors_fp(stderr);
         return 1;
