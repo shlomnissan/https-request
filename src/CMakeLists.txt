@@ -18,13 +18,28 @@ if(USE_SSL)
     add_custom_command(
         TARGET https_request POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-                ${CMAKE_SOURCE_DIR}/ca-bundle.crt
-                ${CMAKE_CURRENT_BINARY_DIR}/ca-bundle.crt
+        ${CMAKE_SOURCE_DIR}/ca-bundle.crt
+        ${CMAKE_CURRENT_BINARY_DIR}/ca-bundle.crt
     )
 
-    if (APPLE)
-      set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
-      set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")
+    if(APPLE)
+        set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
+        set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")
+    endif()
+
+    include(FetchContent)
+    FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG origin/master
+        GIT_SHALLOW true
+    )
+
+    FetchContent_GetProperties(fmt)
+    
+    if(NOT fmt_POPULATED)
+        FetchContent_Populate(fmt)
+        add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR})
     endif()
 
     find_package(OpenSSL REQUIRED)
@@ -32,5 +47,6 @@ if(USE_SSL)
     target_link_libraries(https_request PRIVATE
         OpenSSL::SSL
         OpenSSL::Crypto
+        fmt::fmt
     )
 endif()

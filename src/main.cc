@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <string_view>
+#include <fmt/format.h>
 
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
@@ -72,7 +73,6 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-
     std::string_view hostname = argv[1];
 
     init_openssl();
@@ -98,11 +98,14 @@ int main(int argc, char *argv[]) {
     }
 
     std::string request {
-        "GET / HTTP/1.1\r\n"
-        "Host: www.betamark.com\r\n"
-        "User-Agent: express/0.1\r\n"
-        "Connection: close\r\n"
-        "\r\n"
+        fmt::format(
+            "GET / HTTP/1.1\r\n"
+            "Host: {}\r\n"
+            "User-Agent: https-request/0.1\r\n"
+            "Connection: close\r\n"
+            "\r\n",
+            hostname
+        )
     };
 
     SSL_ptr ssl {SSL_new(ctx.get())};
