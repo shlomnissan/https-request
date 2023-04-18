@@ -66,7 +66,8 @@ namespace Net {
 
     auto URL::processPath() -> void {
         if (path_.empty()) return;
-        if (path_.starts_with("/")) {
+
+        if (*path_.begin() == '/') {
             path_.erase(0, 1);
         }
 

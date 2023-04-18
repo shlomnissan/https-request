@@ -14,6 +14,7 @@
 
 namespace Net {
     using namespace std::chrono;
+
     using SOCKET = int;
 
     enum class EventType {ToRead, ToWrite};
