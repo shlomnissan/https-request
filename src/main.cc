@@ -4,6 +4,7 @@
 #include <chrono>
 #include <iostream>
 #include <string>
+#include <string_view>
 
 #include <openssl/crypto.h>
 #include <openssl/x509.h>
@@ -13,8 +14,6 @@
 #include "socket.hpp"
 
 using namespace std::chrono_literals;
-
-constexpr auto hostname {"example.com"};
 
 auto init_openssl() {
     std::cout << "Initializing OpenSSL\n";
@@ -67,7 +66,15 @@ struct SSL_deleter {
 using SSL_ctx_ptr = std::unique_ptr<SSL_CTX, SSL_CTX_deleter>;
 using SSL_ptr = std::unique_ptr<SSL, SSL_deleter>;
 
-int main() {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cerr << "Usage: https_request https://example.com\n";
+        return 1;
+    }
+
+
+    std::string_view hostname = argv[1];
+
     init_openssl();
 
     Net::Socket socket {{hostname, "443"}};
@@ -92,14 +99,14 @@ int main() {
 
     std::string request {
         "GET / HTTP/1.1\r\n"
-        "Host: example.com\r\n"
+        "Host: www.betamark.com\r\n"
         "User-Agent: express/0.1\r\n"
         "Connection: close\r\n"
         "\r\n"
     };
 
     SSL_ptr ssl {SSL_new(ctx.get())};
-    if (!SSL_set_tlsext_host_name(ssl.get(), hostname)) {
+    if (!SSL_set_tlsext_host_name(ssl.get(), hostname.data())) {
         std::cerr << "SSL_set_tlsext_host_name() failed.\n";
         ERR_print_errors_fp(stderr);
         return 1;
