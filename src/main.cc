@@ -22,7 +22,7 @@ auto main(int argc, char *argv[]) -> int {
 
     URL url {argv[1]};
     auto socket = socket_factory(url);
-    socket->connect();
+    socket->connect(url.host());
 
     auto request{
         fmt::format(

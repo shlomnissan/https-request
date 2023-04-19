@@ -31,7 +31,7 @@ namespace Net {
     public:
         explicit SocketSecure(Endpoint endpoint);
 
-        void connect() override;
+        void connect(std::string_view host) override;
         ssize_t send(std::string_view buffer, milliseconds timeout) const override;
         ssize_t recv(uint8_t* buffer, milliseconds timeout) const override;
 

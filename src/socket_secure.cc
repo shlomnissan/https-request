@@ -20,7 +20,7 @@ namespace Net {
         ctx_.reset(context);
 
         // Load trusted CAs
-        if (!SSL_CTX_load_verify_locations(context, "ca-bundle.crt", 0)) {
+        if (!SSL_CTX_load_verify_locations(context, "ca-bundle.crt", nullptr)) {
             throw SocketSecureError {
                 "Failed to load trusted certificate authorities"
             };
@@ -31,12 +31,25 @@ namespace Net {
         #endif
     }
 
-    void SocketSecure::connect() {
-        Socket::connect();
+    void SocketSecure::connect(std::string_view host) {
+        Socket::connect(host);
 
         ssl_.reset(SSL_new(ctx_.get()));
-        auto sbio = BIO_new_socket(fd_socket_, BIO_NOCLOSE);
-        SSL_set_bio(ssl_.get(), sbio, sbio);
+        SSL_set_fd(ssl_.get(), fd_socket_);
+
+        // Enable SNI
+        if (!SSL_set_tlsext_host_name(ssl_.get(), host.data())) {
+            throw SocketSecureError {
+                "Servername Indication request failed"
+            };
+        }
+
+        // Enable hostname verification
+        if (!X509_VERIFY_PARAM_set1_host(SSL_get0_param(ssl_.get()), host.data(), 0)) {
+            throw SocketSecureError {
+                "Failed to enable hostname verification"
+            };
+        }
 
         // Perform SSL handshake
         if (SSL_connect(ssl_.get()) <= 0) {

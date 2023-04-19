@@ -18,7 +18,7 @@ namespace Net {
         }
     }
 
-    auto Socket::connect() -> void {
+    auto Socket::connect(std::string_view host) -> void {
         auto result = ::connect(
                 fd_socket_,
                 endpoint_.address(),
