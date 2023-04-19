@@ -4,29 +4,23 @@
 #include <iostream>
 #include <memory>
 #include <fmt/format.h>
-#include <iostream>
 
 #include "socket.h"
 #include "socket_secure.h"
 #include "url.h"
 
 using namespace std::chrono_literals;
+using namespace Net;
 
-auto socket_factory(const Net::URL& url) -> std::unique_ptr<Net::Socket> {
-    Net::Endpoint endpoint {url.host(), url.port()};
-    if (url.scheme() == "https") {
-        return std::make_unique<Net::SocketSecure>(std::move(endpoint));
-    }
-    return std::make_unique<Net::Socket>(std::move(endpoint));
-}
+auto socket_factory(const URL& url) -> std::unique_ptr<Socket>;
 
-int main(int argc, char *argv[]) {
+auto main(int argc, char *argv[]) -> int {
     if (argc < 2) {
         std::cerr << "Usage: https_request https://example.com\n";
         return 1;
     }
 
-    Net::URL url {argv[1]};
+    URL url {argv[1]};
     auto socket = socket_factory(url);
     socket->connect();
 
@@ -41,15 +35,22 @@ int main(int argc, char *argv[]) {
         )
     };
 
-    socket->send(request.data(), 0s);
+    socket->send(request, 0s);
     uint8_t temp_buffer[BUFSIZ];
     while (true) {
-        auto size = socket->recv(temp_buffer, 0s);
-        if (size == 0) {
+        if (socket->recv(temp_buffer, 0s) <= 0) {
             break;
         }
         std::cout << temp_buffer << '\n';
     }
 
     return 0;
+}
+
+auto socket_factory(const URL& url) -> std::unique_ptr<Socket> {
+    Endpoint endpoint {url.host(), url.port()};
+    if (url.scheme() == "https") {
+        return std::make_unique<SocketSecure>(std::move(endpoint));
+    }
+    return std::make_unique<Socket>(std::move(endpoint));
 }
