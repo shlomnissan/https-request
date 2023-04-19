@@ -18,23 +18,7 @@ namespace Net {
         }
     }
 
-    Socket::Socket(Socket&& rhs) noexcept :
-            fd_socket_(rhs.fd_socket_),
-            endpoint_(std::move(rhs.endpoint_)) {
-        rhs.fd_socket_ = INVALID_SOCKET;
-    }
-
-    auto Socket::operator=(Socket&& rhs) noexcept -> Socket& {
-        std::swap(fd_socket_, rhs.fd_socket_);
-        std::swap(endpoint_, rhs.endpoint_);
-
-        close(rhs.fd_socket_);
-        rhs.fd_socket_ = INVALID_SOCKET;
-
-        return *this;
-    }
-
-    auto Socket::connect() const -> void {
+    auto Socket::connect() -> void {
         auto result = ::connect(
                 fd_socket_,
                 endpoint_.address(),
