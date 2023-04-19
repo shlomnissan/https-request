@@ -4,13 +4,48 @@ This is a simple cmd tool written in modern C++. It makes HTTP/S requests to a g
 - The goal of this project is to experiment with HTTP clients and OpenSSL. It is not a full-featured HTTP client. For a complete production-grade HTTP client library in C++, check out [express-client](https://github.com/shlomnissan/express-client).
 - If you find this project informative or useful, please ⭐️ this repository to show your support.
 
-### Features
+## Features
 - A command-line application that can run independently
 - Supports both HTTP and HTTPS protocols
 - Written in modern C++
 - Cross-platform compatible
 
-### Usage
+## HTTPS and certificate verification
+Every operating system provides a list of trusted Certificate Authorities (CAs) that can be used to verify SSL certificates. However, there is no general way to import these lists.
+
+Mozilla maintains its own trusted certificate authority (CA) store, which is frequently used by popular open-source HTTP clients. [curl](https://curl.se/) has developed tools to extract these certificates from Firefox and convert them to a file containing the CAs' digital signatures suitable for certificate verification. This file can be downloaded directly from their servers at https://curl.se/docs/caextract.html.
+
+The **https-request** executable requires a trusted CAs file named `ca-bundle.crt` to be placed in the same directory. This project includes a CMake option called `FETCH_TRUSTED_CA` (enabled by default) that downloads the Mozilla CA store into the build's binary directory. If you prefer to use a different store, turn off this option and place your own `ca-bundle.crt` file along with the **https-request** executable.
+
+## Build
+The steps below have been tested on Linux, MacOS, and Windows:
+
+**1. Install dependencies**
+
+Please make sure that the following dependencies are installed on your system:
+- CMake (minimum version 3.22)
+- OpenSSL
+
+**2. Clone the repository**
+```
+$ git clone https://github.com/shlomnissan/https-request.git
+```
+**3. Generate build files for your environment**
+```
+$ cd https-request
+$ mkdir build
+$ cd build
+$ cmake .. -DCMAKE_BUILD_TYPE=Debug
+```
+To generate a build for the Release version, specify `-DCMAKE_BUILD_TYPE=Release` instead.
+
+**4. Build the tool**
+```
+cmake --build .
+```
+Alternatively, you can build the project using your default build system directly.
+
+## Usage
 
 After building the application, a binary will be generated for you.
 If you used CMake, the executable is likely located in the `build/src/` directory.
@@ -19,7 +54,7 @@ Once you locate the executable, you can run it directly from the command line. F
 $ https-request https://www.betamark.com 
 ```
 
-### Licence
+## Licence
 
 ```
     ____       __                             __  
