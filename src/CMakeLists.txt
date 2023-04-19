@@ -5,41 +5,46 @@ file(GLOB SOURCE_FILES "*.cc")
 
 add_executable(https_request ${INCLUDE_FILES} ${SOURCE_FILES})
 
+include(FetchContent)
+
+FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG origin/master
+        GIT_SHALLOW true
+)
+
+FetchContent_GetProperties(fmt)
+
+if(NOT fmt_POPULATED)
+    FetchContent_Populate(fmt)
+    add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR})
+endif()
+
+target_link_libraries(https_request PRIVATE fmt::fmt)
+
 if(USE_SSL)
-    if(NOT EXISTS "${CMAKE_SOURCE_DIR}/ca-bundle.crt")
+    if (FETCH_TRUSTED_CA)
+        file(
+            DOWNLOAD
+            https://curl.se/ca/cacert.pem
+            ${CMAKE_CURRENT_BINARY_DIR}/ca-bundle.crt
+            TLS_VERIFY TRUE
+        )
+    endif()
+
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/ca-bundle.crt")
         message(
             FATAL_ERROR
-            "ca-bundle.crt file is missing in the root directory. "
+            "ca-bundle.crt file is missing in the binary directory. "
             "You can download a trusted CA certificate store from "
             "https://curl.se/docs/caextract.html"
         )
     endif()
 
-    add_custom_command(
-        TARGET https_request POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/ca-bundle.crt
-        ${CMAKE_CURRENT_BINARY_DIR}/ca-bundle.crt
-    )
-
     if(APPLE)
         set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
         set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")
-    endif()
-
-    include(FetchContent)
-    FetchContent_Declare(
-        fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG origin/master
-        GIT_SHALLOW true
-    )
-
-    FetchContent_GetProperties(fmt)
-    
-    if(NOT fmt_POPULATED)
-        FetchContent_Populate(fmt)
-        add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR})
     endif()
 
     find_package(OpenSSL REQUIRED)
