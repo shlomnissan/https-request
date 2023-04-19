@@ -3,6 +3,8 @@
 
 #include "url.h"
 
+#include <algorithm>
+
 namespace Net {
     URL::URL(std::string_view url) : source_(url) {
         parseURL(source_);
