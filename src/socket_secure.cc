@@ -34,6 +34,7 @@ namespace Net {
     void SocketSecure::connect(std::string_view host) {
         Socket::connect(host);
 
+        // Create a new SSL object and bind it to the socket
         ssl_.reset(SSL_new(ctx_.get()));
         SSL_set_fd(ssl_.get(), fd_socket_);
 
@@ -58,7 +59,20 @@ namespace Net {
             };
         }
 
-        // TODO: verify certificate
+        // Verify certificate
+        X509_ptr cert {SSL_get_peer_certificate(ssl_.get())};
+        if (cert) {
+            const auto res = SSL_get_verify_result(ssl_.get());
+            if (res != X509_V_OK) {
+                throw SocketSecureError {
+                    "Failed to verify SSL certificate"
+                };
+            }
+        } else {
+            throw SocketSecureError {
+                "Failed to obtain an SSL certificate from the server"
+            };
+        }
     }
 
     ssize_t SocketSecure::send(std::string_view buffer, milliseconds timeout) const {
