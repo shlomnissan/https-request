@@ -3,6 +3,7 @@ This is a simple cmd tool written in modern C++. It makes HTTP/S requests to a g
 
 [![Ubuntu](https://github.com/shlomnissan/https-request/workflows/Ubuntu/badge.svg)](https://github.com/shlomnissan/https-request/actions/workflows/ubuntu.yml)
 [![MacOS](https://github.com/shlomnissan/https-request/workflows/MacOS/badge.svg)](https://github.com/shlomnissan/https-request/actions/workflows/macos.yml)
+[![Windows](https://github.com/shlomnissan/https-request/workflows/Windows/badge.svg)](https://github.com/shlomnissan/https-request/actions/workflows/windows.yml)
 
 - The goal of this project is to experiment with HTTP clients and OpenSSL. It is not a full-featured HTTP client. For a complete production-grade HTTP client library in C++, check out [express-client](https://github.com/shlomnissan/express-client).
 - If you find this project informative or useful, please ⭐️ this repository to show your support.
