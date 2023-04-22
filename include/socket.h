@@ -9,11 +9,7 @@
 #include "endpoint.h"
 
 #if defined(_WIN32)
-#include <winsock2.h>
-#include <BaseTsd.h>
-
-using ssize_t = SSIZE_T;
-
+#include "winsock.h"
 #define SYS_EINTR WSAEINTR
 #define CLOSE(s) closesocket(s)
 #define ERRNO() (WSAGetLastError())

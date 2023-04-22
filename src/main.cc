@@ -5,6 +5,7 @@
 #include <memory>
 #include <fmt/format.h>
 
+#include "winsock.h"
 #include "socket.h"
 #include "socket_secure.h"
 #include "url.h"
@@ -21,6 +22,11 @@ auto main(int argc, char *argv[]) -> int {
     }
 
     URL url {argv[1]};
+
+    #if defined(WIN32_)
+        WinSock win_sock;
+    #endif
+
     auto socket = socket_factory(url);
     socket->connect(url.host());
 
