@@ -12,10 +12,10 @@ namespace Net {
         hints.ai_socktype = SOCK_STREAM;
 
         addrinfo *address_info;
+        
         if (getaddrinfo(host.data(), port.data(), &hints, &address_info)) {
             throw AddressError {"Failed to initialize an endpoint."};
         }
-
         address_.reset(address_info);
     }
 }

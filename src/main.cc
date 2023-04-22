@@ -23,7 +23,7 @@ auto main(int argc, char *argv[]) -> int {
 
     URL url {argv[1]};
 
-    #if defined(WIN32_)
+    #if defined(_WIN32)
         WinSock win_sock;
     #endif
 
