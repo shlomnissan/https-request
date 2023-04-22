@@ -3,23 +3,39 @@
 
 #pragma once
 
-#include <cerrno>
+
 #include <chrono>
+
+#include "endpoint.h"
+
+#if defined(_WIN32)
+#include <winsock2.h>
+#include <BaseTsd.h>
+
+using ssize_t = SSIZE_T;
+
+#define SYS_EINTR WSAEINTR
+#define CLOSE(s) closesocket(s)
+#define ERRNO() (WSAGetLastError())
+#else
+#include <cerrno>
+#include <unistd.h>
 #include <sys/select.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <unistd.h>
 
-#include "endpoint.h"
+using SOCKET = int;
+constexpr auto INVALID_SOCKET = -1;
+
+#define SYS_EINTR EINTR
+#define CLOSE(s) close(s)
+#define ERRNO() (errno)
+#endif
 
 namespace Net {
     using namespace std::chrono;
 
-    using SOCKET = int;
-
     enum class EventType {ToRead, ToWrite};
-
-    constexpr auto INVALID_SOCKET = -1;
 
     class Socket {
     public:

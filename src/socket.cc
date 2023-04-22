@@ -8,9 +8,9 @@ namespace Net {
 
     Socket::Socket(Endpoint endpoint) : endpoint_(std::move(endpoint)) {
         fd_socket_ = socket(
-                endpoint_.family(),
-                endpoint_.socketType(),
-                endpoint_.protocol()
+            endpoint_.family(),
+            endpoint_.socketType(),
+            endpoint_.protocol()
         );
 
         if (fd_socket_ == INVALID_SOCKET) {
@@ -20,16 +20,16 @@ namespace Net {
 
     auto Socket::connect(std::string_view host) -> void {
         auto result = ::connect(
+            fd_socket_,
+            endpoint_.address(),
+            static_cast<int>(endpoint_.addressLength())
+        );
+
+        while (result == -1 && ERRNO() == EINTR) {
+            result = ::connect(
                 fd_socket_,
                 endpoint_.address(),
                 static_cast<int>(endpoint_.addressLength())
-        );
-
-        while (result == -1 && errno == EINTR) {
-            result = ::connect(
-                    fd_socket_,
-                    endpoint_.address(),
-                    static_cast<int>(endpoint_.addressLength())
             );
         }
 
@@ -53,10 +53,17 @@ namespace Net {
         FD_ZERO(&fdset);
         FD_SET(fd_socket_, &fdset);
 
-        timeval select_timeout {
-            .tv_sec = static_cast<time_t>(timeout.count() / 1000),
-            .tv_usec = static_cast<suseconds_t>((timeout.count() % 1000) * 1000),
-        };
+        #if defined(_WIN32)
+            TIMEVAL select_timeout {
+                static_cast<LONG>(timeout.count() / 1000),
+                static_cast<LONG>((timeout.count() % 1000) * 1000)
+            }; 
+        #else
+            timeval select_timeout {
+                static_cast<time_t>(timeout.count() / 1000),
+                static_cast<suseconds_t>((timeout.count() % 1000) * 1000),
+            };
+        #endif
 
         auto count = ::select(
             static_cast<int>(fd_socket_ + 1),
@@ -66,7 +73,7 @@ namespace Net {
             timeout.count() > 0 ? &select_timeout : nullptr
         );
 
-        while (count == -1 && errno == InterruptedBySystemSignal) {
+        while (count == -1 && ERRNO() == InterruptedBySystemSignal) {
             count = ::select(
                 static_cast<int>(fd_socket_ + 1),
                 event == EventType::ToRead ? &fdset : nullptr,
@@ -82,7 +89,7 @@ namespace Net {
 
     Socket::~Socket() {
         if (fd_socket_ != INVALID_SOCKET) {
-            close(fd_socket_);
+            CLOSE(fd_socket_);
             fd_socket_ = INVALID_SOCKET;
         }
     }
