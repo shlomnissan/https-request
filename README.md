@@ -1,5 +1,5 @@
 # 🌍 https-request
-This is a simple cmd tool written in modern C++. It makes HTTP/S requests to a given host and prints the output.
+This is a simple tool written in modern C++. It makes HTTP/S requests to a given host and prints the output.
 
 [![Ubuntu](https://github.com/shlomnissan/https-request/workflows/Ubuntu/badge.svg)](https://github.com/shlomnissan/https-request/actions/workflows/ubuntu.yml)
 [![MacOS](https://github.com/shlomnissan/https-request/workflows/MacOS/badge.svg)](https://github.com/shlomnissan/https-request/actions/workflows/macos.yml)
@@ -9,15 +9,15 @@ This is a simple cmd tool written in modern C++. It makes HTTP/S requests to a g
 - If you find this project informative or useful, please ⭐️ this repository to show your support.
 
 ## Features
-- A command-line application that can run independently
+- A command-line application
 - Supports both HTTP and HTTPS protocols
 - Written in modern C++
-- Cross-platform compatible
+- Cross-platform
 
 ## HTTPS and certificate verification
 Every operating system provides a list of trusted Certificate Authorities (CAs) that can be used to verify SSL certificates. However, there is no general way to import these lists.
 
-Mozilla maintains its own trusted certificate authority (CA) store, which is frequently used by popular open-source HTTP clients. [curl](https://curl.se/) has developed tools to extract these certificates from Firefox and convert them to a file containing the CAs' digital signatures suitable for certificate verification. This file can be downloaded directly from their servers at https://curl.se/docs/caextract.html.
+Mozilla maintains its own trusted certificate authority (CA) store, which is frequently used by HTTP clients. [curl](https://curl.se/) has developed tools to extract these certificates from Firefox and convert them to a file containing the CAs' digital signatures suitable for certificate verification. This file can be downloaded directly from their servers at https://curl.se/docs/caextract.html.
 
 The **https-request** executable requires a trusted CAs file named `ca-bundle.crt` to be placed in the same directory. This project includes a CMake option called `FETCH_TRUSTED_CA` (enabled by default) that downloads the Mozilla CA store into the build's binary directory. If you prefer to use a different store, turn off this option and place your own `ca-bundle.crt` file along with the **https-request** executable.
 
@@ -51,9 +51,8 @@ Alternatively, you can build the project using your default build system directl
 
 ## Usage
 
-After building the application, a binary will be generated for you.
-If you used CMake, the executable is likely located in the `build/src/` directory.
-Once you locate the executable, you can run it directly from the command line. For example:
+This command-line application accepts a single argument: the hostname of the website to which you want to connect.
+Only the HTTP and HTTPS URL schemes are supported.
 ```
 $ https-request https://www.betamark.com 
 ```
