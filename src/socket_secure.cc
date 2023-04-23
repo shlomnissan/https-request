@@ -4,8 +4,17 @@
 #include "socket_secure.h"
 
 namespace Net {
+    constexpr auto kOpenSSLMinVersion = 0x1000200fL; // v1.0.2
+
     SocketSecure::SocketSecure(Endpoint endpoint)
       : Socket(std::move(endpoint)) {
+        // Check version
+        if (OpenSSL_version_num() < kOpenSSLMinVersion) {
+            throw SocketSecureError {
+                "The minimum required version of OpenSSL is 1.0.2"
+            };
+        }
+
         // Initialize OpenSSL
         SSL_library_init();
         SSL_load_error_strings();
