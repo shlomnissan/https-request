@@ -25,10 +25,6 @@ namespace Net {
                 "Failed to load trusted certificate authorities"
             };
         }
-
-        #if (OPENSSL_VERSION_NUMBER < 0x0090600fL)
-            SSL_CTX_set_verify_depth(ctx_,1);
-        #endif
     }
 
     void SocketSecure::connect(std::string_view host) {

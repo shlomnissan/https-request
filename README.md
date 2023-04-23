@@ -15,11 +15,11 @@ This is a simple tool written in modern C++. It makes HTTP/S requests to a given
 - Cross-platform
 
 ## HTTPS and certificate verification
-Every operating system provides a list of trusted Certificate Authorities (CAs) that can be used to verify SSL certificates. However, there is no general way to import these lists.
+Every operating system provides a list of trusted Certificate Authorities (CAs) that can be used to verify server certificates. However, there is no general way to import these lists.
 
-Mozilla maintains its own trusted certificate authority (CA) store, which is frequently used by HTTP clients. [curl](https://curl.se/) has developed tools to extract these certificates from Firefox and convert them to a file containing the CAs' digital signatures suitable for certificate verification. This file can be downloaded directly from their servers at https://curl.se/docs/caextract.html.
+Mozilla maintains its own trusted certificate authority (CA) store, which is frequently used by HTTP clients. [curl](https://curl.se/) has developed tools to extract these certificates from Firefox and convert them to a file containing the CAs' digital signatures suitable for server certificate verification. This file can be downloaded directly from their servers at https://curl.se/docs/caextract.html.
 
-The **https-request** executable requires a trusted CAs file named `ca-bundle.crt` to be placed in the same directory. This project includes a CMake option called `FETCH_TRUSTED_CA` (enabled by default) that downloads the Mozilla CA store into the build's binary directory. If you prefer to use a different store, turn off this option and place your own `ca-bundle.crt` file along with the **https-request** executable.
+The **https-request** executable requires a trusted CAs PEM file named `ca-bundle.crt` to be placed in the same directory. This project includes a CMake option called `FETCH_TRUSTED_CA` (enabled by default) that downloads the Mozilla CA store into the build's binary directory. If you prefer to use a different store, turn off this option and place your own `ca-bundle.crt` file along with the **https-request** executable.
 
 ## Build
 The steps below have been tested on Linux, MacOS, and Windows:
