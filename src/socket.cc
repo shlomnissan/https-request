@@ -43,6 +43,20 @@ namespace Net {
         return ::send(fd_socket_, buffer.data(), static_cast<int>(buffer.size()), 0);
     }
 
+    auto Socket::sendAll(std::string_view buffer, milliseconds timeout) const -> void {
+        auto data = buffer.data();
+        auto len = buffer.size();
+        ssize_t sent = 0;
+        while (len > 0) {
+            sent = this->send(data, timeout);
+            if (sent == -1) {
+                throw SocketError {"Failed to send data to the server."};
+            }
+            data += sent;
+            len -= sent;
+        }
+    }
+
     auto Socket::recv(uint8_t* buffer, milliseconds timeout) const -> ssize_t {
         wait(EventType::ToRead, timeout);
         return ::recv(fd_socket_, reinterpret_cast<char*>(buffer), BUFSIZ, 0);

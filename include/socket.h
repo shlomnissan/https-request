@@ -28,6 +28,8 @@ namespace Net {
         virtual auto send(std::string_view buffer, milliseconds timeout) const -> ssize_t;
         virtual auto recv(uint8_t* buffer, milliseconds timeout) const -> ssize_t;
 
+        auto sendAll(std::string_view buffer, milliseconds timeout) const -> void;
+
         [[nodiscard]] SOCKET get() const { return fd_socket_; };
 
         virtual ~Socket();

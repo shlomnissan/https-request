@@ -41,7 +41,7 @@ auto main(int argc, char *argv[]) -> int {
         )
     };
 
-    socket->send(request, 0s);
+    socket->sendAll(request, 0s);
     uint8_t temp_buffer[BUFSIZ];
     while (true) {
         if (socket->recv(temp_buffer, 0s) <= 0) {
