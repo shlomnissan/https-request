@@ -23,9 +23,9 @@ auto main(int argc, char *argv[]) -> int {
 
     URL url {argv[1]};
 
-    #if defined(_WIN32)
-        WinSock win_sock;
-    #endif
+#if defined(_WIN32)
+    WinSock winsock;
+#endif
 
     auto socket = socket_factory(url);
     socket->connect(url.host());

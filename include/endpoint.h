@@ -7,12 +7,7 @@
 #include <stdexcept>
 #include <string_view>
 
-#if defined(_WIN32)
-#include "winsock.h"
-#else
-#include <netdb.h>
-#include <sys/socket.h>
-#endif
+#include "sock_defs.h"
 
 namespace Net {
     class Endpoint {

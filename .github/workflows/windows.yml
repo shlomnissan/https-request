@@ -29,5 +29,6 @@ jobs:
         shell: bash
         run: |
           cd src
+          cd Release
           ls
           ./https_request https://example.com

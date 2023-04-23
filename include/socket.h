@@ -7,26 +7,7 @@
 #include <chrono>
 
 #include "endpoint.h"
-
-#if defined(_WIN32)
-#include "winsock.h"
-#define SYS_EINTR WSAEINTR
-#define CLOSE(s) closesocket(s)
-#define ERRNO() (WSAGetLastError())
-#else
-#include <cerrno>
-#include <unistd.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-
-using SOCKET = int;
-constexpr auto INVALID_SOCKET = -1;
-
-#define SYS_EINTR EINTR
-#define CLOSE(s) close(s)
-#define ERRNO() (errno)
-#endif
+#include "sock_defs.h"
 
 namespace Net {
     using namespace std::chrono;
