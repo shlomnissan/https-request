@@ -6,6 +6,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string_view>
+#include <string>
 
 #include "sock_defs.h"
 
@@ -19,6 +20,7 @@ namespace Net {
         [[nodiscard]] auto protocol() const { return address_->ai_protocol; }
         [[nodiscard]] auto address() const { return address_->ai_addr; }
         [[nodiscard]] auto addressLength() const { return address_->ai_addrlen; }
+        [[nodiscard]] auto host() const { return host_; }
 
     private:
         struct addrinfo_deleter {
@@ -27,6 +29,8 @@ namespace Net {
             }
         };
         std::unique_ptr<addrinfo, addrinfo_deleter> address_ {nullptr};
+        std::string host_;
+        std::string port_;
     };
 
     struct AddressError : public std::runtime_error {

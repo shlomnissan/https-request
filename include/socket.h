@@ -24,7 +24,7 @@ namespace Net {
         Socket(const Socket&) = delete;
         auto operator=(const Socket&) -> Socket& = delete;
 
-        virtual auto connect(std::string_view host) -> void;
+        virtual auto connect() -> void;
         virtual auto send(std::string_view buffer, milliseconds timeout) const -> ssize_t;
         virtual auto recv(uint8_t* buffer, milliseconds timeout) const -> ssize_t;
 

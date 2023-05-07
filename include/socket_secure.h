@@ -5,10 +5,7 @@
 
 #include "socket.h"
 
-#include <openssl/crypto.h>
-#include <openssl/x509.h>
 #include <openssl/ssl.h>
-#include <openssl/err.h>
 
 namespace Net {
     struct SSL_CTX_deleter {
@@ -24,21 +21,14 @@ namespace Net {
         }
     };
 
-    struct X509_deleter {
-        auto operator()(X509* cert) const {
-            X509_free(cert);
-        }
-    };
-
     using SSL_CTX_ptr = std::unique_ptr<SSL_CTX, SSL_CTX_deleter>;
     using SSL_ptr = std::unique_ptr<SSL, SSL_deleter>;
-    using X509_ptr = std::unique_ptr<X509, X509_deleter>;
 
     class SocketSecure : public Socket {
     public:
         explicit SocketSecure(Endpoint endpoint);
 
-        void connect(std::string_view host) override;
+        void connect() override;
         ssize_t send(std::string_view buffer, milliseconds timeout) const override;
         ssize_t recv(uint8_t* buffer, milliseconds timeout) const override;
 
