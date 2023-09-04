@@ -26,31 +26,6 @@ target_link_libraries(https_request PRIVATE fmt::fmt)
 set(CA_BUNDLE_FILENAME ca-bundle.crt)
 
 if(USE_SSL)
-    if(FETCH_TRUSTED_CA)
-        file(
-            DOWNLOAD
-            https://curl.se/ca/cacert.pem
-            ${CMAKE_CURRENT_BINARY_DIR}/${CA_BUNDLE_FILENAME}
-            TLS_VERIFY TRUE
-        )
-    endif()
-
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${CA_BUNDLE_FILENAME}")
-        message(
-            FATAL_ERROR
-            "${CA_BUNDLE_FILENAME} file is missing in the binary directory. "
-            "You can download a trusted CA certificate store from "
-            "https://curl.se/docs/caextract.html"
-        )
-    endif()
-
-    add_custom_command(
-        TARGET https_request POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_CURRENT_BINARY_DIR}/${CA_BUNDLE_FILENAME}
-        $<TARGET_FILE_DIR:https_request>
-    )
-
     if(APPLE)
         set(OPENSSL_ROOT_DIR "/usr/local/opt/openssl")
         set(OPENSSL_LIBRARIES "/usr/local/opt/openssl/lib")

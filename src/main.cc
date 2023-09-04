@@ -47,7 +47,7 @@ auto main(int argc, char *argv[]) -> int {
         if (socket->recv(temp_buffer, 0s) <= 0) {
             break;
         }
-        std::cout << temp_buffer << '\n';
+        std::cout << temp_buffer;
     }
 
     return 0;
