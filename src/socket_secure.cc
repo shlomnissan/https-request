@@ -37,13 +37,8 @@ namespace Net {
             };
         }
         ctx_.reset(context);
-
-        // Load trusted CAs
-        if (!SSL_CTX_load_verify_locations(context, "ca-bundle.crt", nullptr)) {
-            throw SocketSecureError {
-                "Failed to load trusted certificate authorities"
-            };
-        }
+        
+        SSL_CTX_set_default_verify_dir(ctx_.get());
     }
 
     void SocketSecure::connect() {
